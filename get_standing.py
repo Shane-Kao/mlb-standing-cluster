@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import requests
 
 
@@ -6,7 +8,7 @@ def get_standing():
         url="https://statsapi.mlb.com/api/v1/standings",
         params={
             "leagueId": "103,104",
-            "season": 2021,
+            "season": datetime.now().year,
             "standingsTypes": "regularSeason",
         }
     )
