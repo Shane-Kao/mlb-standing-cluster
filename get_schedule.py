@@ -1,10 +1,9 @@
-from datetime import datetime
+import re
+import json
+
+from datetime import datetime, timedelta
 
 import requests
-
-
-def get_video():
-    pass
 
 
 def get_schedule(date):
@@ -15,22 +14,19 @@ def get_schedule(date):
             "contextTeamId=".format(date, date),
     )
     raw_data = r.json()
-
+    print(r.url)
     return [{
         'away_team': i['teams']['away']['team']['name'],
         'home_team': i['teams']['home']['team']['name'],
-        'recap': [k for k in [j for j in i['content']['media']['epgAlternate'] if
-                  j['title'] == 'Daily Recap'][0]['items'][0]['playbacks'] if
-                  k['name'] == 'highBit'][0]['url'],  # mp4Avc
-        'condensed': [k for k in [j for j in i['content']['media']['epgAlternate'] if
-                  j['title'] == 'Extended Highlights'][0]['items'][0]['playbacks'] if k['name'] == 'highBit'][0]['url'] if
-        [j for j in i['content']['media']['epgAlternate'] if
-                  j['title'] == 'Extended Highlights'][0]['items'] else None,
+        'media': [i for i in re.findall(
+            'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+            json.dumps(i['content'].get('media', ''))
+        ) if i.endswith('16000K.mp4')]
     } for i in raw_data['dates'][0]['games']]
 
 
 if __name__ == '__main__':
-    date = datetime.now().strftime(format="%Y-%m-%d")
+    date = (datetime.now() - timedelta(days=1)).strftime(format="%Y-%m-%d")
     data = get_schedule(date)
     for i in data:
-        print(i)
+        print(i['media'])

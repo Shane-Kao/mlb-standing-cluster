@@ -26,4 +26,7 @@ schedule = get_schedule(date)
 schedule = [dict(score=rank_dict[i['away_team']] + rank_dict[i['home_team']], **i) for i in schedule]
 
 for i in sorted(schedule, key=lambda x: x['score']):
-    print(i)
+    print(i["away_team"], i["home_team"], i["score"])
+    for j in i['media']:
+        print(j)
+    print()
